@@ -1,0 +1,27 @@
+## Setting eureka
+eureka:
+  instance:
+    preferIpAddress: true                           # register the ip of the service rather than the server name
+  client:
+    registerWithEureka: true                        # register the service with eureka
+    fetchRegistry: true                             # pull down a local copy of the registry
+    serviceUrl:
+        defaultZone: http://localhost:8761/eureka/  # location of eureka server
+
+## Setting logging levels
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+
+## Setting security
+security:
+  oauth2: 
+    resource:
+      filter-order: 3                               # Avoid "http://localhost:8901/auth/user" to return the login page rather than user info
+                                                    # https://stackoverflow.com/questions/43308625/spring-security-oauth2-always-redirects-to-login-page-having-a-valid-bearer-hea
+## Setting server
+server:
+  contextPath: /auth                                # prefix of urls for service
+  port: 8901                                        # port of service

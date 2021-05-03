@@ -1,0 +1,107 @@
+
+/*
+ * Root build file.  Defines a modular/sub-project approach to builds.
+ *
+ * Some ideas on multiproject organization:
+ *   https://softnoise.wordpress.com/2014/09/07/gradle-sub-project-test-dependencies-in-multi-project-builds/
+ */
+
+allprojects {
+    apply plugin: 'idea'
+    idea {
+        module {
+            inheritOutputDirs = true
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+            url 'https://repo.spring.io/plugins-snapshot'
+        }
+    }
+    dependencies { 
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.5"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.0.RELEASE"
+    }
+}
+
+apply plugin: "org.sonarqube"
+apply plugin: "io.spring.dependency-management"
+
+configure(subprojects.findAll { it.name.contains("-")}) {
+    apply plugin: 'java'
+    apply plugin: "jacoco"
+    apply plugin: io.spring.gradle.dependencymanagement.DependencyManagementPlugin
+    apply plugin: 'org.springframework.boot'
+
+    buildDir = new File(rootProject.projectDir, "build/" + project.name)
+
+    jacoco {
+        toolVersion = "0.7.6.201602180812"
+        reportsDir = file("$buildDir/customJacocoReportDir")
+    }
+
+    compileJava {
+        sourceCompatibility = '1.8'
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = [file('src/java')]
+            resources.srcDirs = [file('src/resources')]
+        }
+        test {
+            java.srcDirs = [file('test/unit')]
+            resources.srcDirs = [file('test/resources')]
+        }
+    }
+
+    // https://stackoverflow.com/questions/51988922/spring-dependency-management-gradle-plugin-doesnt-download-dependency
+    // Use Spring dependency management to manage all spring related libraries.
+    // But this block will not apply itself these dependencies to sub-project, only configured the dependencies contraints.
+    // In the script of your sub-project, you need to add libraries to your dependencies block.
+    dependencyManagement {
+        dependencies {
+            dependencySet(group: "org.springframework.boot", version: "1.4.4.RELEASE") {
+                entry "spring-boot-starter-web"
+                entry "spring-boot-starter-actuator"
+                entry "spring-boot-starter-data-jpa"
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+	
+//	jar {
+//	    manifest {
+//	        attributes('Implementation-Title': project.name,
+//	                   'Implementation-Version': project.version)
+//	    }
+//	}
+
+    
+
+    // common dependencies for all subprojects
+    dependencies {
+
+        // unit testing
+        testCompile 'junit:junit:4.12'
+
+        compile 'junit-addons:junit-addons:1.4'
+
+        // multi-thread unit testing
+        testCompile 'com.vmlens:concurrent-junit:1.0.0'
+
+        // TestNG
+        compile 'org.testng:testng:6.5.2'
+        compile 'org.easymock:easymock:3.4'
+        
+		//compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: '1.4.4.RELEASE', ext: 'pom'
+    }
+}

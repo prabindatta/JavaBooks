@@ -1,0 +1,33 @@
+## Setting eureka
+eureka:
+  instance:
+    preferIpAddress: true                         # register the ip of the service rather than the server name
+  client:
+    registerWithEureka: true                      # register the service with eureka
+    fetchRegistry: true                           # pull down a local copy of the registry
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/  # location of eureka server
+
+## Setting logging levels
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+
+## Setting Message queue and database
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: orgChangeTopic             # message queue name
+          content-type: application/json          # type of message
+          group: licensingGroup                   # group of consumers
+        binder:
+          zkNodes: localhost                      # location of zookeeper
+          brokers: localhost                      # location of kafka (message broker)
+  data:
+    jpa:
+      repositories:
+         enabled: true                            # enable the spring data jpa (orm and dao)

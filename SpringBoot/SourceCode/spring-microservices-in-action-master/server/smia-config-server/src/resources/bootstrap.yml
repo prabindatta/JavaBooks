@@ -1,0 +1,8 @@
+## Setting spring
+spring:
+  application:
+    name: configserver          # name of service
+  cloud:
+    config:
+      server:
+        encrypt.enabled: false  # disable the server-side decryption of properties

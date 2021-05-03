@@ -1,0 +1,51 @@
+## Setting eureka
+eureka:
+  instance:
+    preferIpAddress: true                         # register the ip of the service rather than the server name
+  client:
+    registerWithEureka: true                      # register the service with eureka
+    fetchRegistry: true                           # pull down a local copy of the registry
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/  # location of eureka server
+
+## Setting logging levels
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+
+## Setting server
+server:
+  port: 5555                                      # port of service
+
+## Setting signing
+signing:
+  key: 345345fsdfsf5345                           # symmetric encryption key
+
+## Setting Spring
+spring:
+  application:
+    name: zuulservice                             # name of service
+  profiles:
+    active:
+      default                                     # envrionment (default, dev, prod)
+  zipkin:
+     baseUrl: http://localhost:9411/              # send tracing information to Zipkin server
+  cloud:
+    config:
+      enabled: true                               # retrieve config from config server
+
+endpoints:
+  routes:
+    sensitive: false
+
+# Zuul configuration
+#zuul:
+  # ignored-services: '*'                           # Exclude all the auto-generated routes between the Eureka service IDs and the registered services
+  # prefix:  /api                                   # Add the prefix in all the service calls, like "/organization/**" =>> "/api/organization/**"
+  #routes:
+    #organizationservice: /organization/**           # Customize the route to organization service ("/organizationservice/**" =>> "/organization/**"")
+    #licensingservice: /licensing/**                 # Customize the route to licensing service    ("/licensingservice/**"    =>> "/licensing/**"    )
+
+
